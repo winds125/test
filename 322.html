@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>浮动图像显示</title>
+	<script language=javascript>
+	var navigator_ok=false;//定义浏览器检查变量
+	var version_No=parseInt(navigator.appVersion.substring(0,1));//取得浏览器的版本号第1个字母并转换为数字
+	var aname=navigator.appName;//取得浏览器的名称
+	function check_navigate() {
+		if(aname.indexOf("InternetExplorer")!=-1){
+			if (version_No>=4)
+				navigator_ok=navigator.javaEnabled();
+		}
+	}//检查浏览器是否为IE4.0以上版本
+	var delta_min=2;//定义移动增量的最小值
+	var delta_max=5;//定义移动增量的最大值
+	var delta_direction=2;//定义产生X，Y增量，随机调整大小幅度的变量
+	function floater_obj(origin_x,origin_y,my_width,my_height){//定义一个记录浮动图像的对象
+		this.delta_x=0;
+		this.delta_y=0;
+		this.width=my_width;
+		this.height=my_height;
+		this.x=origin_x;
+		this.y=origin_y;
+	}
+	function floater_move(){//定义使图像产生浮动效果的执行函数
+		if(navigator_ok){
+			pageX=window.document.body.scrollLeft;//取得文档在窗口内的X和Y方向的偏移量
+			pageY=window.document.body.scrollTop;
+			pageW=window.document.body.offsetWidth;//取得当前窗口的宽度和高度的数值
+			pageH=window.document.body.offsetHeight;
+			floater.x+=floater.delta_x;//累计X、Y的增量值
+			floater.y+=floater.delta_y;
+			floater.delta_x+=delta_direction*(Math.random()-0.5);//使X、Y的增量值随机地增加或减少
+			floater.delta_y+=delta_direction*(Math.random()-0.5);
+			if (floater.delta_x>(delta_max+delta_min))//限制X、Y的边界正、负增量值不超过最大限制
+				floater.delta_x=(delta_max+delta_min)*2-floater.delta_x;
+			if (floater.delta_x<(-delta_max-delta_min))
+				floater.delta_x=(-delta_max-delta_min)*2-floater.delta_x;
+			if (floater.delta_y>(delta_max+delta_min))
+				floater.delta_y=(delta_max+delta_min)*2-floater.delta_y;
+			if (floater.delta_y<(-delta_max-delta_min))
+				floater.delta_y=(-delta_max-delta_min)*2-floater.delta_y;
+			if (floater.x<=pageX) {//如果移动到窗口的左边界，则产生一个正的增量值，使其向右移动
+				floater.x=pageX;
+				floater.delta_x=delta_min+delta_max*Math.random();
+			}
+			if (floater.x>=pageX+pageW-floater.width) {//如果移动到窗口的右边界，则产生一个负的增量值，使其向左移动
+				floater.x=pageX+pageW-floater.width;
+				floater.delta_x=-delta_min-delta_max*Math.random();
+			}
+			if (floater.y<=pageY) {//如果移动到窗口的上边界，则产生一个正的增量值，使其向下移动
+				floater.y=pageY;
+				floater.delta_y=delta_min+delta_max*Math.random();
+			}
+			if (floater.y>=pageY+pageH-floater.height) {//如果移动到窗口的下边界，则产生一个负的增量值，使其向上移动
+				floater.y=pageY+pageH-floater.height;
+				floater.delta_y=-delta_min-delta_max*Math.random();
+			}
+			document.all.my_picture.style.pixelLeft=floater.x;
+			document.all.my_picture.style.pixelTop=floater.y;
+		}
+	}
+	var floater;//定义一个用于产生对象实例的全局变量
+	function  ini() {//初始化函数（在<body onload="ini()">中调用）
+		check_navigate();//调用检查浏览器函数
+		if (nabigator_ok) {
+			//---------------------
+			//生成一个记录移动位置的“对象实例”
+			//对象参数顺序为：对象在页面上出现的初始x坐标、y坐标，对象的宽度、高度
+			//----x、y坐标定义方法如下
+			//左上角定义为：（0,0）
+			//右上角定义为：（800，0）
+			//左下角定义为：（0,600）
+			//右下角定义为：（800,600）
+			//------------------------
+			//如果被显示的图像为80*80的尺寸
+			//定义对象宽度为：80+20=100（考虑窗口水平滚动条宽度）
+			//定义对象高度为：80+20=100（考虑窗口垂直滚动条宽度）
+			//--------------------------
+			floater=new floater_obj(800,0,100,100);
+			window.setInterval("floater_move()",100);//定时执行图像移动函数（现为：100毫秒）
+		}
+	}
+	</script>
+</head>
+<body bgcolor="#FFFFFF" onload="ini()">
+<!--使用CSS样式-->
+<div id=my_picture style="HEIGHT:88px;POSITION:absolute;WIDTH:80px;left:185px;top:73px;z-index:10">
+<a href="http://sino8848.com"target=_blank><img border=0 src="111.jpg"></a>
+</div>
+</body>
+</html>
